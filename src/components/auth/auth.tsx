@@ -1,14 +1,18 @@
 'use client'
+
 import cn from 'classnames'
 import { FC, useCallback, useState } from "react"
+import { RootState } from "@/app/store/store"
+import { createUser } from '@/app/store/Features/auth/auth'
+import { useSelector, useDispatch } from "react-redux";
 
 import { Input } from '../input/Input'
 
 export const AuthPage: FC = () => {
 
-    const [email, setEmail] = useState('')
+    const [userEmail, setuserEmail] = useState('')
     const [userName, setUserName] = useState('')
-    const [password, setPassword] = useState('')
+    const [userPassword, setuserPassword] = useState('')
 
     const [variant, setVariant] = useState('login')
 
@@ -16,16 +20,29 @@ export const AuthPage: FC = () => {
         setVariant((currentVariant) => currentVariant === 'login' ? 'register' : 'login')
     }, [])
 
+    const auth = useSelector((state: RootState) => state.auth)
+    const dispatch = useDispatch()
+
+    const takeValue = () => {
+        dispatch(createUser({userEmail, userPassword}))
+        console.log(auth)
+        setuserEmail('')
+        setUserName('')
+        setuserPassword('')
+    }
+
     return(
-        <div className={cn(
+        <div 
+            className={cn(
                 "relative h-full w-full", 
                 "bg-[url(/images/hero.jpg)]",
                 "bg-no-repeat bg-center bg-fixed bg-cover"
-            )}>
+            )}
+        >
                 <div className='bg-black w-full h-full lg:bg-opacity-50'>
-                        <nav className='px-12 py-5'>
+                        {/* <nav className='px-12 py-5'>
                             <img src="/images/logo.png" alt="logo" className='h-12'/>
-                        </nav>
+                        </nav> */}
                         <div className='flex justify-center'>
                             <div className='bg-black bg-opacity-70 px-16 py-16 self-center mt-2 lg:w-2/5 lg:h-max-w-md rounded-md w-full'>
                                 <h2 className='text-white text-4xl mb-8 font-semibold'>
@@ -35,28 +52,31 @@ export const AuthPage: FC = () => {
                                 {variant === 'register' && (
                                     <Input 
                                             label="Name"
-                                            onChange={(ev:string) => {setUserName(ev.target.value)}}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {setUserName(e.target.value)}}
                                             id='Name'
                                             type='name'
-                                            value=''
+                                            value={userName}
                                     />
                                 )}
                                     <Input 
                                         label="Email"
-                                        onChange={(ev:string) => {setEmail(ev.target.value)}}
-                                        id='email'
-                                        type='email'
-                                        value=''
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {setuserEmail(e.target.value)}}
+                                        id='Email'
+                                        type='Email'
+                                        value={userEmail}
                                     />
                                     <Input 
                                         label="Password"
-                                        onChange={(ev:string) => {setPassword(ev.target.value)}}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {setuserPassword(e.target.value as string)}}
                                         id='Password'
                                         type='Password'
-                                        value=''
+                                        value={userPassword}
                                     />
                                 </div>
-                                <button className='bg-red-600 py-3 text-white rounded-md w-full mt-10 hover:bg-red-700 transition'>
+                                <button 
+                                    className='bg-red-600 py-3 text-white rounded-md w-full mt-10 hover:bg-red-700 transition'
+                                    onClick={takeValue}
+                                >    
                                     {variant === 'login' ? 'Login' : 'Sign up'}
                                 </button>
                                 <p className='text-neutral-500 mt-12'>
